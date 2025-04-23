@@ -13,6 +13,7 @@ function App() {
   const [isRegistering, setIsRegistering] = useState(false); // Toggle between login and register
   const [words, setWords] = useState([]);
   const [editingWord, setEditingWord] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Load word bank from Firebase
   useEffect(() => {
@@ -74,6 +75,15 @@ function App() {
       });
   };
 
+  // Filtering Words
+  const filteredWords = words.filter((word) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      word.french.toLowerCase().startsWith(term) ||
+      word.english.toLowerCase().startsWith(term)
+    );
+  });
+
   // Handle login (for simplicity, you can check if username and password exist)
   const handleLogin = (enteredUsername, enteredPassword) => {
     // You can extend this with actual authentication logic with Firebase or any backend
@@ -103,7 +113,14 @@ function App() {
         </h1>
         <AddWordForm addWord={addWord} editingWord={editingWord} />
         <div className="mt-6">
-          <WordBank words={words} onEdit={startEditing} onDelete={deleteWord} />
+        <input
+          type="text"
+          placeholder="🔍 Search words..."
+          className="border border-blue-300 rounded p-2 w-full mb-4"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+          <WordBank words={filteredWords} onEdit={startEditing} onDelete={deleteWord} />
         </div>
       </div>
     </div>
