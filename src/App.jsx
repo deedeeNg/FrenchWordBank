@@ -91,9 +91,21 @@ function App() {
       setUsername(enteredUsername);
       setPassword(enteredPassword);
       setLoggedIn(true);
+      setIsRegistering(false);
     } else {
       alert('Please enter valid username and password');
     }
+  };
+
+  // Handle logout
+  const handleLogout = () => {
+    setLoggedIn(false);
+    setUsername('');
+    setPassword('');
+    setWords([]);
+    setEditingWord(null);
+    setSearchTerm('');
+    setIsRegistering(false);
   };
 
   // Show login/register page if not logged in
@@ -111,6 +123,17 @@ function App() {
         <h1 className="text-4xl font-bold text-blue-700 mb-8 text-center">
           📘 French Vocab Word Bank
         </h1>
+        <div className="flex justify-between items-center mb-6">
+        <span className="text-lg text-gray-700">
+          👋 Hello, <strong>{username}</strong>
+        </span>
+        <button
+          onClick={handleLogout}
+          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+        >
+          Log out
+        </button>
+      </div>
         <AddWordForm addWord={addWord} editingWord={editingWord} />
         <div className="mt-6">
         <input
