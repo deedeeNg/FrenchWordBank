@@ -3,7 +3,7 @@ import AddWordForm from './AddWordForm';
 import WordBank from './WordBank';
 import Login from './Login';
 import Register from './Register'; // ⬅️ Create this component
-import { database, ref, set, get, child } from './firebase'; // adjust path if needed
+import { database, ref, set, get, child} from './firebase'; // adjust path if needed
 
 
 function App() {
@@ -59,6 +59,21 @@ function App() {
     setEditingWord({ ...words[index], index });
   };
 
+  // Deleting a word
+  const deleteWord = (indexToDelete) => {
+    const userRef = ref(database, `users/${username}/wordBank`);
+    const updatedWords = words.filter((_, index) => index !== indexToDelete);
+  
+    // Update Firebase with filtered words
+    set(updatedWords.length > 0 ? userRef : ref(database, `users/${username}/wordBank`), updatedWords)
+      .then(() => {
+        setWords(updatedWords);
+      })
+      .catch((error) => {
+        console.error('Error deleting word:', error);
+      });
+  };
+
   // Handle login (for simplicity, you can check if username and password exist)
   const handleLogin = (enteredUsername, enteredPassword) => {
     // You can extend this with actual authentication logic with Firebase or any backend
@@ -88,7 +103,7 @@ function App() {
         </h1>
         <AddWordForm addWord={addWord} editingWord={editingWord} />
         <div className="mt-6">
-          <WordBank words={words} onEdit={startEditing} />
+          <WordBank words={words} onEdit={startEditing} onDelete={deleteWord} />
         </div>
       </div>
     </div>
