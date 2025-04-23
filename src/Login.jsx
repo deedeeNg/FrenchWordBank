@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+import { getDatabase, ref, get, child } from 'firebase/database';
 
 const Login = ({ onLogin, toggleForm }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!username || !password) {
@@ -13,7 +14,29 @@ const Login = ({ onLogin, toggleForm }) => {
       return;
     }
 
-    onLogin(username, password); // Log in the user
+    try {
+      const db = getDatabase();
+      const snapshot = await get(child(ref(db), 'users'));
+
+      if (snapshot.exists()) {
+        const users = snapshot.val();
+        const foundUser = Object.entries(users).find(
+          ([, value]) =>
+            value.username === username && value.password === password
+        );
+
+        if (foundUser) {
+          onLogin(username, password);
+        } else {
+          setError('Invalid username or password');
+        }
+      } else {
+        setError('No users found in database');
+      }
+    } catch (err) {
+      console.error('Firebase error:', err);
+      setError('An error occurred while logging in');
+    }
   };
 
   return (
