@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 function AddWordForm({ addWord, editingWord }) {
   const [french, setFrench] = useState('');
   const [english, setEnglish] = useState('');
-  const [gender, setGender] = useState('');
+  const [type, setType] = useState('');
   const [sentence, setSentence] = useState('');
   const [notes, setNotes] = useState('');
 
@@ -11,11 +11,7 @@ function AddWordForm({ addWord, editingWord }) {
     if (editingWord) {
       setFrench(editingWord.french);
       setEnglish(editingWord.english);
-      setGender(
-        editingWord.gender === 'm' ? 'masculine' :
-        editingWord.gender === 'f' ? 'feminine' :
-        editingWord.gender
-      );
+      setType(editingWord.type || '');
       setSentence(editingWord.sentence || '');
       setNotes(editingWord.notes || '');
     }
@@ -23,11 +19,11 @@ function AddWordForm({ addWord, editingWord }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const newWord = { french, english, gender, sentence, notes };
+    const newWord = { french, english, type, sentence, notes };
     addWord(newWord);
     setFrench('');
     setEnglish('');
-    setGender('');
+    setType('');
     setSentence('');
     setNotes('');
   };
@@ -55,13 +51,18 @@ function AddWordForm({ addWord, editingWord }) {
       <div>
         <select
           className="border rounded p-2 w-full"
-          value={gender}
-          onChange={(e) => setGender(e.target.value)}
+          value={type}
+          onChange={(e) => setType(e.target.value)}
           required
         >
-          <option value="">Select gender</option>
-          <option value="masculine">Masculine</option>
-          <option value="feminine">Feminine</option>
+          <option value="">Select word type</option>
+          <option value="nm">Noun (masculine)</option>
+          <option value="nf">Noun (feminine)</option>
+          <option value="verb">Verb</option>
+          <option value="adj">Adjective</option>
+          <option value="adv">Adverb</option>
+          <option value="conj">Conjunction</option>
+          <option value="preposition">Preposition</option>
         </select>
       </div>
       <div>

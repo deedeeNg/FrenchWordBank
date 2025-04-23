@@ -9,7 +9,7 @@ function WordCard({ word, index, onEdit }) {
       </h1>
 
       <p><strong>Anglais:</strong> {word.english}</p>
-      <p><strong>Gender:</strong> {word.gender}</p>
+      <p><strong>Type:</strong> {word.type}</p>
       {word.sentence && <p><strong>Example:</strong> {word.sentence}</p>}
       {word.notes && <p><strong>Notes:</strong> {word.notes}</p>}
 
