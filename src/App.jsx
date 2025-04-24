@@ -14,6 +14,7 @@ function App() {
   const [words, setWords] = useState([]);
   const [editingWord, setEditingWord] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Load word bank from Firebase
   useEffect(() => {
