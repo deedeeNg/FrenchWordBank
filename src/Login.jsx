@@ -40,42 +40,39 @@ const Login = ({ onLogin, toggleForm }) => {
   };
 
   return (
-    <div className="p-6 max-w-md mx-auto bg-white shadow-md rounded-lg">
-      <h2 className="text-2xl font-bold mb-4">Login</h2>
-      {error && <p className="text-red-500 mb-4">{error}</p>}
-      <form onSubmit={handleSubmit}>
+    <div className="w-full max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
+      <h2 className="text-3xl font-bold text-blue-700 mb-6 text-center">Login</h2>
+      {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div className="mb-4">
-          <label htmlFor="username" className="block text-gray-700">Username</label>
-          <input 
-            type="text" 
-            id="username" 
-            value={username} 
-            onChange={(e) => setUsername(e.target.value)} 
-            className="w-full p-2 border rounded mt-2" 
+          <label htmlFor="username" className="block text-gray-700 font-semibold">Username</label>
+          <input
+            type="text"
+            id="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
-
         <div className="mb-4">
-          <label htmlFor="password" className="block text-gray-700">Password</label>
-          <input 
-            type="password" 
-            id="password" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            className="w-full p-2 border rounded mt-2" 
+          <label htmlFor="password" className="block text-gray-700 font-semibold">Password</label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
-
-        <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded mt-4">
-          Login
+        <button type="submit" className="w-full bg-blue-600 text-white p-3 rounded-lg mt-4 hover:bg-blue-700 transition-all duration-300">
+          Log In
         </button>
       </form>
-
       <p className="text-center mt-4">
         Don't have an account?{' '}
-        <button onClick={toggleForm} className="text-blue-500">Register</button>
+        <button onClick={toggleForm} className="text-blue-600 font-semibold">Register</button>
       </p>
     </div>
   );

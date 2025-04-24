@@ -110,12 +110,19 @@ function App() {
 
   // Show login/register page if not logged in
   if (!loggedIn) {
-    return isRegistering ? (
-      <Register onRegister={handleLogin} toggleForm={() => setIsRegistering(false)} />
-    ) : (
-      <Login onLogin={handleLogin} toggleForm={() => setIsRegistering(true)} />
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-blue-50 to-white px-4">
+        <div className="w-full max-w-xl p-8">
+          {isRegistering ? (
+            <Register onRegister={handleLogin} toggleForm={() => setIsRegistering(false)} />
+          ) : (
+            <Login onLogin={handleLogin} toggleForm={() => setIsRegistering(true)} />
+          )}
+        </div>
+      </div>
     );
   }
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-white py-10 px-4">
