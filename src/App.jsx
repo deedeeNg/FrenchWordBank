@@ -3,6 +3,7 @@ import AddWordForm from './AddWordForm';
 import WordBank from './WordBank';
 import Login from './Login';
 import Register from './Register'; // ⬅️ Create this component
+import ConfirmLogoutModal from './ConfirmLogoutModal'
 import { database, ref, set, get, child} from './firebase'; // adjust path if needed
 
 
@@ -14,7 +15,7 @@ function App() {
   const [words, setWords] = useState([]);
   const [editingWord, setEditingWord] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Load word bank from Firebase
   useEffect(() => {
@@ -98,8 +99,13 @@ function App() {
     }
   };
 
+   // Handle logout with confirmation
+   const handleLogoutClick = () => {
+    setIsModalOpen(true); // Open the confirmation modal
+  };
+
   // Handle logout
-  const handleLogout = () => {
+  const handleConfirmLogout = () => {
     setLoggedIn(false);
     setUsername('');
     setPassword('');
@@ -107,6 +113,11 @@ function App() {
     setEditingWord(null);
     setSearchTerm('');
     setIsRegistering(false);
+    setIsModalOpen(false); // Close the modal
+  };
+
+  const handleCancelLogout = () => {
+    setIsModalOpen(false); // Close the modal without logging out
   };
 
   // Show login/register page if not logged in
@@ -132,15 +143,24 @@ function App() {
           📘 French Vocab Word Bank
         </h1>
         <div className="flex justify-between items-center mb-6">
-        <span className="text-lg text-gray-700">
-          👋 Hello, <strong>{username}</strong>
-        </span>
-        <button
-          onClick={handleLogout}
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-        >
-          Log out
-        </button>
+          <span className="text-lg text-gray-700">
+            👋 Hello, <strong>{username}</strong>
+          </span>
+          <div>
+            <button
+              onClick={handleLogoutClick}
+              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+            >
+              Log out
+            </button>
+
+            {/* Confirmation Modal */}
+            <ConfirmLogoutModal
+              isOpen={isModalOpen}
+              onConfirm={handleConfirmLogout}
+              onCancel={handleCancelLogout}
+            />
+        </div>
       </div>
         <AddWordForm addWord={addWord} editingWord={editingWord} />
         <div className="mt-6">
