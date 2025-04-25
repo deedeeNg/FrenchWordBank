@@ -2,23 +2,21 @@ import React, { useState, useEffect } from 'react';
 import AddWordForm from './AddWordForm';
 import WordBank from './WordBank';
 import Login from './Login';
-import Register from './Register'; // ⬅️ Create this component
-import ConfirmLogoutModal from './ConfirmLogoutModal'
-import { database, ref, set, get, child} from './firebase'; // adjust path if needed
-
+import Register from './Register';
+import ConfirmLogoutModal from './ConfirmLogoutModal';
+import { database, ref, set, get, child, update, onDisconnect } from './firebase';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [isRegistering, setIsRegistering] = useState(false); // Toggle between login and register
+  const [isRegistering, setIsRegistering] = useState(false);
   const [words, setWords] = useState([]);
   const [editingWord, setEditingWord] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
 
-  // Load word bank from Firebase
   useEffect(() => {
     if (username) {
       const dbRef = ref(database);
@@ -32,7 +30,6 @@ function App() {
     }
   }, [username]);
 
-  // Save to Firebase when words change
   useEffect(() => {
     if (username && words.length > 0) {
       set(ref(database, `users/${username}/wordBank`), words);
@@ -40,7 +37,6 @@ function App() {
   }, [words, username]);
 
   useEffect(() => {
-    // Apply or remove the 'dark' class on <html> or <body>
     if (darkMode) {
       document.documentElement.classList.add('dark');
     } else {
@@ -48,7 +44,6 @@ function App() {
     }
   }, [darkMode]);
 
-  // Add or update a word
   const addWord = (newWord) => {
     const isDuplicate = words.some(
       (word) => word.french.toLowerCase() === newWord.french.toLowerCase()
@@ -67,17 +62,14 @@ function App() {
     }
   };
 
-  // Start editing a word
   const startEditing = (index) => {
     setEditingWord({ ...words[index], index });
   };
 
-  // Deleting a word
   const deleteWord = (indexToDelete) => {
     const userRef = ref(database, `users/${username}/wordBank`);
     const updatedWords = words.filter((_, index) => index !== indexToDelete);
-  
-    // Update Firebase with filtered words
+
     set(updatedWords.length > 0 ? userRef : ref(database, `users/${username}/wordBank`), updatedWords)
       .then(() => {
         setWords(updatedWords);
@@ -87,7 +79,6 @@ function App() {
       });
   };
 
-  // Filtering Words
   const filteredWords = words.filter((word) => {
     const term = searchTerm.toLowerCase();
     return (
@@ -96,26 +87,45 @@ function App() {
     );
   });
 
-  // Handle login (for simplicity, you can check if username and password exist)
-  const handleLogin = (enteredUsername, enteredPassword) => {
-    // You can extend this with actual authentication logic with Firebase or any backend
-    if (enteredUsername && enteredPassword) {
+  const handleLogin = async (enteredUsername, enteredPassword) => {
+    if (!enteredUsername || !enteredPassword) {
+      alert('Please enter valid username and password');
+      return;
+    }
+
+    const userRef = ref(database, `users/${enteredUsername}`);
+    const snapshot = await get(userRef);
+
+    if (snapshot.exists()) {
+      const userData = snapshot.val();
+      if (userData.loggedIn) {
+        alert('🚫 This account is already in use.');
+        return;
+      }
+
+      await update(userRef, {
+        loggedIn: true,
+        lastActive: Date.now()
+      });
+
+      onDisconnect(ref(database, `users/${enteredUsername}/loggedIn`)).set(false);
+
       setUsername(enteredUsername);
       setPassword(enteredPassword);
       setLoggedIn(true);
       setIsRegistering(false);
     } else {
-      alert('Please enter valid username and password');
+      alert('Account does not exist. Please register.');
     }
   };
 
-   // Handle logout with confirmation
-   const handleLogoutClick = () => {
-    setIsModalOpen(true); // Open the confirmation modal
+  const handleLogoutClick = () => {
+    setIsModalOpen(true);
   };
 
-  // Handle logout
-  const handleConfirmLogout = () => {
+  const handleConfirmLogout = async () => {
+    await update(ref(database, `users/${username}`), { loggedIn: false });
+
     setLoggedIn(false);
     setUsername('');
     setPassword('');
@@ -123,15 +133,14 @@ function App() {
     setEditingWord(null);
     setSearchTerm('');
     setIsRegistering(false);
-    setIsModalOpen(false); // Close the modal
+    setIsModalOpen(false);
     setDarkMode(false);
   };
 
   const handleCancelLogout = () => {
-    setIsModalOpen(false); // Close the modal without logging out
+    setIsModalOpen(false);
   };
 
-  // Show login/register page if not logged in
   if (!loggedIn) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-blue-50 to-white px-4">
@@ -145,7 +154,6 @@ function App() {
       </div>
     );
   }
-  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-white dark:from-gray-800 dark:via-gray-900 dark:to-gray-950 py-10 px-4 transition-all">
@@ -174,7 +182,6 @@ function App() {
               Log out
             </button>
 
-            {/* Confirmation Modal */}
             <ConfirmLogoutModal
               isOpen={isModalOpen}
               onConfirm={handleConfirmLogout}
