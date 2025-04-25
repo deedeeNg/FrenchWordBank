@@ -54,15 +54,21 @@ function WordBank({ words, onEdit, onDelete, darkMode }) {
               <div className="mt-2 md:mt-0 flex gap-2">
                 <button
                   onClick={() => onEdit(realIndex)}
-                  className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded"
+                  className="w-10 h-10 flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full transition"
+                  title="Edit"
                 >
-                  Edit
+                  ✏️
                 </button>
                 <button
-                  onClick={() => onDelete(realIndex)}
-                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                  onClick={() => {
+                    if (window.confirm(`Are you sure you want to delete "${word.french}"?`)) {
+                      onDelete(realIndex);
+                    }
+                  }}
+                  className="w-10 h-10 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-full transition"
+                  title="Delete"
                 >
-                  Delete
+                  🗑️
                 </button>
               </div>
             </div>
