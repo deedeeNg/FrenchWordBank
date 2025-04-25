@@ -2,10 +2,20 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 function WordBank({ words, onEdit, onDelete, darkMode }) {
+  let isFirstSpeech = true;
   const speakWord = (text) => {
+    const synth = window.speechSynthesis;
+    synth.cancel();
+
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'fr-FR';
-    speechSynthesis.speak(utterance);
+
+    if (isFirstSpeech) {
+      isFirstSpeech = false;
+      setTimeout(() => synth.speak(utterance), 100); // Helps trigger speech on first use
+    } else {
+      synth.speak(utterance);
+    }
   };
 
   const reversedWords = [...words].reverse();
