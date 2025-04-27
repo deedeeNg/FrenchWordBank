@@ -18,7 +18,7 @@ function WordBank({ words, onEdit, onDelete, darkMode }) {
     }
   };
 
-  const reversedWords = [...words].reverse();
+  const reversedWords = [...words].reverse().slice(0, 10);
 
   const capitalizeFirstLetter = (str) => {
     if (!str) return '';
