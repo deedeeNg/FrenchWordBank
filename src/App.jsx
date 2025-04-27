@@ -79,11 +79,15 @@ function App() {
       });
   };
 
+  // Searching words
+  const normalize = (str) => 
+    str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  
   const filteredWords = words.filter((word) => {
-    const term = searchTerm.toLowerCase();
+    const term = normalize(searchTerm);
     return (
-      word.french.toLowerCase().startsWith(term) ||
-      word.english.toLowerCase().startsWith(term)
+      normalize(word.french).startsWith(term) ||
+      normalize(word.english).startsWith(term)
     );
   });
 
