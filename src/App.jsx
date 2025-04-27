@@ -5,6 +5,7 @@ import Login from './Login';
 import Register from './Register';
 import ConfirmLogoutModal from './ConfirmLogoutModal';
 import { database, ref, set, get, child, update, onDisconnect } from './firebase';
+import { FiMenu, FiX } from 'react-icons/fi'; // You can install react-icons for the hamburger menu
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -16,6 +17,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     if (username) {
@@ -160,11 +162,71 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-white dark:from-gray-800 dark:via-gray-900 dark:to-gray-950 py-10 px-4 transition-all">
-      <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 shadow-lg rounded-xl p-8 border border-blue-100 dark:border-gray-700 transition-all">
+    <div className="min-h-screen flex bg-gradient-to-br from-blue-100 via-blue-50 to-white dark:from-gray-800 dark:via-gray-900 dark:to-gray-950 transition-all">
+      
+      {/* Sidebar */}
+      <div
+        className={`bg-gray-200 text-black p-6 flex flex-col transition-all duration-300 ease-in-out ${
+          sidebarCollapsed ? 'w-20' : 'w-64'
+        } shadow-lg rounded-r-xl fixed top-0 left-0 h-full`}
+      >
+        {/* Collapse/Expand Button */}
+        <button
+          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+          className="mb-6 text-white focus:outline-none hover:text-blue-300 transition-colors duration-300"
+        >
+          {sidebarCollapsed ? (
+            <FiMenu className="text-2xl" />
+          ) : (
+            <FiX className="text-2xl" />
+          )}
+        </button>
+
+        {/* Only show content if not collapsed */}
+        {!sidebarCollapsed && (
+          <>
+            <nav className="flex flex-col space-y-6">
+              <button className="text-left hover:text-blue-300 text-lg transition-all duration-300">
+                🏠 Home
+              </button>
+              <button className="text-left hover:text-blue-300 text-lg transition-all duration-300">
+                ➕ Add Word
+              </button>
+              <button className="text-left hover:text-blue-300 text-lg transition-all duration-300">
+                📚 Word Bank
+              </button>
+            </nav>
+
+            {/* Show Log out button only when sidebar is expanded */}
+            <div className="mt-auto">
+              <button
+                onClick={handleLogoutClick}
+                className="w-full py-2 px-4 bg-red-500 hover:bg-red-600 rounded-lg text-white text-lg font-semibold mt-6 transition-all duration-300"
+              >
+                🚪 Log out
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* Always show ConfirmLogoutModal even if sidebar collapsed */}
+        <ConfirmLogoutModal
+          isOpen={isModalOpen}
+          onConfirm={handleConfirmLogout}
+          onCancel={handleCancelLogout}
+        />
+      </div>
+
+      {/* Main Content */}
+      <div
+        className={`flex-1 p-10 transition-all ${
+          sidebarCollapsed ? 'ml-20' : 'ml-64'
+        }`}
+      >
+        {/* Dark mode toggle and greeting */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-4xl font-bold text-blue-700 dark:text-white text-center w-full">
-            📘 French Vocab Word Bank
+          <h1 className="text-4xl font-bold text-blue-700 dark:text-white">
+            📖 French Vocab Word Bank
           </h1>
           <button
             onClick={() => setDarkMode(!darkMode)}
@@ -174,28 +236,14 @@ function App() {
           </button>
         </div>
 
-        <div className="flex justify-between items-center mb-6">
-          <span className="text-lg text-gray-700 dark:text-gray-300">
-            👋 Hello, <strong>{username}</strong>
-          </span>
-          <div>
-            <button
-              onClick={handleLogoutClick}
-              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-            >
-              Log out
-            </button>
-
-            <ConfirmLogoutModal
-              isOpen={isModalOpen}
-              onConfirm={handleConfirmLogout}
-              onCancel={handleCancelLogout}
-            />
-          </div>
+        <div className="text-lg text-gray-700 dark:text-gray-300 mb-6">
+          👋 Hello, <strong>{username}</strong>
         </div>
 
-        <AddWordForm addWord={addWord} editingWord={editingWord} darkMode={darkMode}/>
+        {/* Add word form */}
+        <AddWordForm addWord={addWord} editingWord={editingWord} darkMode={darkMode} />
 
+        {/* Search input */}
         <div className="mt-6">
           <input
             type="text"
@@ -204,6 +252,8 @@ function App() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+
+          {/* Word bank */}
           <WordBank words={filteredWords} onEdit={startEditing} onDelete={deleteWord} darkMode={darkMode} />
         </div>
       </div>
