@@ -20,6 +20,11 @@ function WordBank({ words, onEdit, onDelete, darkMode }) {
 
   const reversedWords = [...words].reverse();
 
+  const capitalizeFirstLetter = (str) => {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
   return (
     <div className="space-y-4">
       <div>
@@ -41,7 +46,7 @@ function WordBank({ words, onEdit, onDelete, darkMode }) {
             >
               <div>
                 <p className="text-xl font-semibold text-blue-700 dark:text-blue-300 flex items-center gap-2">
-                  {word.french} ({word.type})
+                  {capitalizeFirstLetter(word.french)} ({word.type})
                   <button
                     onClick={() => speakWord(word.french)}
                     className="text-sm bg-purple-500 hover:bg-purple-600 text-white px-2 py-1 rounded"
