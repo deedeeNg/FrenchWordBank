@@ -141,6 +141,7 @@ function App() {
     setIsRegistering(false);
     setIsModalOpen(false);
     setDarkMode(false);
+    setSidebarCollapsed(false);
   };
 
   const handleCancelLogout = () => {
@@ -162,18 +163,18 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-blue-100 via-blue-50 to-white dark:from-gray-800 dark:via-gray-900 dark:to-gray-950 transition-all">
+    <div className="min-h-screen flex bg-gray-100 dark:bg-gray-800 transition-all">
       
       {/* Sidebar */}
       <div
-        className={`bg-gray-200 text-black p-6 flex flex-col transition-all duration-300 ease-in-out ${
+        className={`bg-gray-200 dark:bg-gray-700 text-black dark:text-white p-6 flex flex-col transition-all duration-300 ease-in-out ${
           sidebarCollapsed ? 'w-20' : 'w-64'
-        } shadow-lg rounded-r-xl fixed top-0 left-0 h-full`}
+        } shadow-lg fixed top-0 left-0 h-full`}
       >
         {/* Collapse/Expand Button */}
         <button
           onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          className="mb-6 text-white focus:outline-none hover:text-blue-300 transition-colors duration-300"
+          className="mb-6 text-gray-800 dark:text-gray-300 focus:outline-none hover:text-gray-500 dark:hover:text-gray-400 transition-colors duration-300"
         >
           {sidebarCollapsed ? (
             <FiMenu className="text-2xl" />
@@ -186,13 +187,13 @@ function App() {
         {!sidebarCollapsed && (
           <>
             <nav className="flex flex-col space-y-6">
-              <button className="text-left hover:text-blue-300 text-lg transition-all duration-300">
+              <button className="text-left hover:text-gray-500 dark:hover:text-gray-400 text-lg transition-all duration-300">
                 🏠 Home
               </button>
-              <button className="text-left hover:text-blue-300 text-lg transition-all duration-300">
+              <button className="text-left hover:text-gray-500 dark:hover:text-gray-400 text-lg transition-all duration-300">
                 ➕ Add Word
               </button>
-              <button className="text-left hover:text-blue-300 text-lg transition-all duration-300">
+              <button className="text-left hover:text-gray-500 dark:hover:text-gray-400 text-lg transition-all duration-300">
                 📚 Word Bank
               </button>
             </nav>
@@ -208,13 +209,6 @@ function App() {
             </div>
           </>
         )}
-
-        {/* Always show ConfirmLogoutModal even if sidebar collapsed */}
-        <ConfirmLogoutModal
-          isOpen={isModalOpen}
-          onConfirm={handleConfirmLogout}
-          onCancel={handleCancelLogout}
-        />
       </div>
 
       {/* Main Content */}
@@ -225,12 +219,12 @@ function App() {
       >
         {/* Dark mode toggle and greeting */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-4xl font-bold text-blue-700 dark:text-white">
+          <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100">
             📖 French Vocab Word Bank
           </h1>
           <button
             onClick={() => setDarkMode(!darkMode)}
-            className="ml-4 bg-gray-200 dark:bg-gray-700 text-black dark:text-white px-3 py-1 rounded"
+            className="ml-4 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-100 px-3 py-1 rounded"
           >
             {darkMode ? '🌞' : '🌙'}
           </button>
@@ -248,7 +242,7 @@ function App() {
           <input
             type="text"
             placeholder="🔍 Search words..."
-            className="border border-blue-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-black dark:text-white rounded p-2 w-full mb-4"
+            className="border border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded p-2 w-full mb-4"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -257,6 +251,13 @@ function App() {
           <WordBank words={filteredWords} onEdit={startEditing} onDelete={deleteWord} darkMode={darkMode} />
         </div>
       </div>
+
+      {/* Confirm Logout Modal */}
+      <ConfirmLogoutModal
+        isOpen={isModalOpen}
+        onConfirm={handleConfirmLogout}
+        onCancel={handleCancelLogout}
+      />
     </div>
   );
 }

@@ -4,26 +4,24 @@ const ConfirmLogoutModal = ({ isOpen, onConfirm, onCancel }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
-      <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-sm mx-4 animate-fade-in">
-        <h2 className="text-xl font-semibold text-gray-800 text-center mb-5">
-          Confirm Logout
-        </h2>
-        <p className="text-gray-600 text-center mb-6">
-          Are you sure you want to log out?
-        </p>
-        <div className="flex justify-center gap-4">
-          <button
-            onClick={onConfirm}
-            className="bg-red-600 hover:bg-red-700 text-white font-medium px-5 py-2 rounded-lg transition duration-200"
-          >
-            Yes, Log Out
-          </button>
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    >
+      <div className="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 p-6 rounded-lg shadow-lg z-60">
+        <h2 className="text-xl font-bold mb-4">Confirm Logout</h2>
+        <p className="mb-6">Are you sure you want to log out?</p>
+        <div className="flex justify-end space-x-4">
           <button
             onClick={onCancel}
-            className="border border-gray-300 hover:border-gray-500 text-gray-700 hover:text-gray-900 font-medium px-5 py-2 rounded-lg transition duration-200"
+            className="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-100 rounded hover:bg-gray-400 dark:hover:bg-gray-500 transition-all"
           >
             Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-all"
+          >
+            Logout
           </button>
         </div>
       </div>
