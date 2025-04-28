@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import AddWordForm from './AddWordForm';
 import WordBank from './WordBank';
 import Login from './Login';
@@ -150,84 +150,73 @@ function App() {
     setIsModalOpen(false);
   };
 
-  if (!loggedIn) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-blue-50 to-white px-4">
-        <div className="w-full max-w-xl p-8">
-          {isRegistering ? (
-            <Register onRegister={handleLogin} toggleForm={() => setIsRegistering(false)} />
-          ) : (
-            <Login onLogin={handleLogin} toggleForm={() => setIsRegistering(true)} />
-          )}
-        </div>
-      </div>
-    );
-  }
-
   return (
     <Router>
       <div className="min-h-screen flex bg-gray-100 dark:bg-gray-800 transition-all">
         {/* Sidebar */}
-        <div
-          className={`bg-gray-200 dark:bg-gray-700 text-black dark:text-white p-6 flex flex-col transition-all duration-300 ease-in-out ${
-            sidebarCollapsed ? 'w-20' : 'w-64'
-          } shadow-lg fixed top-0 left-0 h-full`}
-        >
-          {/* Collapse/Expand Button */}
-          <button
-            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            className="mb-6 text-gray-800 dark:text-gray-300 focus:outline-none hover:text-gray-500 dark:hover:text-gray-400 transition-colors duration-300"
+        {loggedIn && (
+          <div
+            className={`bg-gray-200 dark:bg-gray-700 text-black dark:text-white p-6 flex flex-col transition-all duration-300 ease-in-out ${
+              sidebarCollapsed ? 'w-20' : 'w-64'
+            } shadow-lg fixed top-0 left-0 h-full`}
           >
-            {sidebarCollapsed ? (
-              <FiMenu className="text-2xl" />
-            ) : (
-              <FiX className="text-2xl" />
-            )}
-          </button>
+            {/* Collapse/Expand Button */}
+            <button
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              className="mb-6 text-gray-800 dark:text-gray-300 focus:outline-none hover:text-gray-500 dark:hover:text-gray-400 transition-colors duration-300"
+            >
+              {sidebarCollapsed ? (
+                <FiMenu className="text-2xl" />
+              ) : (
+                <FiX className="text-2xl" />
+              )}
+            </button>
 
-          {/* Navigation Bar */}
-          <nav className="flex flex-col space-y-6">
+            {/* Navigation Bar */}
+            <nav className="flex flex-col space-y-6">
+              {!sidebarCollapsed && (
+                <>
+                  <Link
+                    to="/"
+                    className="text-left hover:text-gray-500 dark:hover:text-gray-400 text-lg transition-all duration-300"
+                  >
+                    🏠 Home
+                  </Link>
+                  <Link
+                    to="/quiz"
+                    className="text-left hover:text-gray-500 dark:hover:text-gray-400 text-lg transition-all duration-300"
+                  >
+                    🧩 Quiz
+                  </Link>
+                </>
+              )}
+            </nav>
+
+            {/* Show Log out button only when sidebar is expanded */}
             {!sidebarCollapsed && (
-              <>
-                <Link
-                  to="/"
-                  className="text-left hover:text-gray-500 dark:hover:text-gray-400 text-lg transition-all duration-300"
+              <div className="mt-auto">
+                <button
+                  onClick={handleLogoutClick}
+                  className="w-full py-2 px-4 bg-red-500 hover:bg-red-600 rounded-lg text-white text-lg font-semibold mt-6 transition-all duration-300"
                 >
-                  🏠 Home
-                </Link>
-                <Link
-                  to="/quiz"
-                  className="text-left hover:text-gray-500 dark:hover:text-gray-400 text-lg transition-all duration-300"
-                >
-                  🧩 Quiz
-                </Link>
-              </>
+                  🚪 Log out
+                </button>
+              </div>
             )}
-          </nav>
-
-          {/* Show Log out button only when sidebar is expanded */}
-          {!sidebarCollapsed && (
-            <div className="mt-auto">
-              <button
-                onClick={handleLogoutClick}
-                className="w-full py-2 px-4 bg-red-500 hover:bg-red-600 rounded-lg text-white text-lg font-semibold mt-6 transition-all duration-300"
-              >
-                🚪 Log out
-              </button>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Main Content */}
         <div
           className={`flex-1 p-10 transition-all ${
-            sidebarCollapsed ? 'ml-20' : 'ml-64'
+            loggedIn && sidebarCollapsed ? 'ml-20' : loggedIn ? 'ml-64' : ''
           }`}
         >
           <Routes>
+            {/* Redirect to /login if not logged in */}
             <Route
               path="/"
-              element={
+              element={loggedIn ? (
                 <>
                   <div className="flex justify-between items-center mb-6">
                     <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100">
@@ -257,9 +246,42 @@ function App() {
                     />
                   </div>
                 </>
+              ) : (
+                <Navigate to="/login" />
+              )}
+            />
+
+            {/* Quiz Page */}
+            <Route
+              path="/quiz"
+              element={loggedIn ? <Quiz words={words} /> : <Navigate to="/login" />}
+            />
+
+            {/* Login Page */}
+            <Route
+              path="/login"
+              element={
+                loggedIn ? (
+                  <Navigate to="/" />
+                ) : (
+                  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-blue-50 to-white px-4">
+                    <div className="w-full max-w-xl p-8">
+                      {isRegistering ? (
+                        <Register
+                          onRegister={handleLogin}
+                          toggleForm={() => setIsRegistering(false)}
+                        />
+                      ) : (
+                        <Login
+                          onLogin={handleLogin}
+                          toggleForm={() => setIsRegistering(true)}
+                        />
+                      )}
+                    </div>
+                  </div>
+                )
               }
             />
-            <Route path="/quiz" element={<Quiz words={words} />} />
           </Routes>
         </div>
 
