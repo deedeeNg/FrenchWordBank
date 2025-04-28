@@ -43,7 +43,6 @@ function Quiz({ words }) {
 
     setCurrentQuestion(correctWord);
     setOptions(allOptions);
-    setFeedback(''); // Clear feedback when generating a new question
   };
 
   const handleAnswer = (selectedWord) => {
@@ -56,12 +55,8 @@ function Quiz({ words }) {
       setFeedback(`❌ Incorrect! The correct answer was "${currentQuestion.french}".`);
     }
 
-    // Delay resetting the question to allow feedback to be visible
-    setTimeout(() => {
-      setQuestionIndex(questionIndex + 1);
-      generateQuestion(); // Generate a new question regardless of correctness
-      setFeedback(''); // Clear feedback after moving to the next question
-    }, 2000); // 2-second delay
+    setQuestionIndex(questionIndex + 1);
+    generateQuestion(); // Generate a new question regardless of correctness
   };
 
   const restartQuiz = () => {

@@ -177,7 +177,7 @@ function App() {
               {!sidebarCollapsed && (
                 <>
                   <Link
-                    to="/"
+                    to="/home"
                     className="text-left hover:text-gray-500 dark:hover:text-gray-400 text-lg transition-all duration-300"
                   >
                     🏠 Home
@@ -213,58 +213,14 @@ function App() {
           }`}
         >
           <Routes>
-            {/* Redirect to /login if not logged in */}
-            <Route
-              path="/"
-              element={loggedIn ? (
-                <>
-                  <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100">
-                      📖 French Vocab Word Bank
-                    </h1>
-                    <button
-                      onClick={() => setDarkMode(!darkMode)}
-                      className="ml-4 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-100 px-3 py-1 rounded"
-                    >
-                      {darkMode ? '🌞' : '🌙'}
-                    </button>
-                  </div>
-                  <AddWordForm addWord={addWord} editingWord={editingWord} darkMode={darkMode} />
-                  <div className="mt-6">
-                    <input
-                      type="text"
-                      placeholder="🔍 Search words..."
-                      className="border border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded p-2 w-full mb-4"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    <WordBank
-                      words={filteredWords}
-                      onEdit={startEditing}
-                      onDelete={deleteWord}
-                      darkMode={darkMode}
-                    />
-                  </div>
-                </>
-              ) : (
-                <Navigate to="/login" />
-              )}
-            />
-
-            {/* Quiz Page */}
-            <Route
-              path="/quiz"
-              element={loggedIn ? <Quiz words={words} /> : <Navigate to="/login" />}
-            />
-
             {/* Login Page */}
             <Route
-              path="/login"
+              path="/"
               element={
                 loggedIn ? (
-                  <Navigate to="/" />
+                  <Navigate to="/home" />
                 ) : (
-                  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-blue-50 to-white px-4">
+                  <div className="min-h-screen w-full flex items-center justify-center bg-gray-100 dark:bg-gray-800">
                     <div className="w-full max-w-xl p-8">
                       {isRegistering ? (
                         <Register
@@ -280,6 +236,54 @@ function App() {
                     </div>
                   </div>
                 )
+              }
+            />
+
+            {/* Home Page */}
+            <Route
+              path="/home"
+              element={
+                loggedIn ? (
+                  <>
+                    <div className="flex justify-between items-center mb-6">
+                      <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100">
+                        📖 French Vocab Word Bank
+                      </h1>
+                      <button
+                        onClick={() => setDarkMode(!darkMode)}
+                        className="ml-4 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-100 px-3 py-1 rounded"
+                      >
+                        {darkMode ? '🌞' : '🌙'}
+                      </button>
+                    </div>
+                    <AddWordForm addWord={addWord} editingWord={editingWord} darkMode={darkMode} />
+                    <div className="mt-6">
+                      <input
+                        type="text"
+                        placeholder="🔍 Search words..."
+                        className="border border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded p-2 w-full mb-4"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                      <WordBank
+                        words={filteredWords}
+                        onEdit={startEditing}
+                        onDelete={deleteWord}
+                        darkMode={darkMode}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <Navigate to="/" />
+                )
+              }
+            />
+
+            {/* Quiz Page */}
+            <Route
+              path="/quiz"
+              element={
+                loggedIn ? <Quiz words={words} /> : <Navigate to="/" />
               }
             />
           </Routes>
