@@ -73,57 +73,67 @@ function Quiz({ words }) {
 
   if (!quizStarted) {
     return (
-      <div className="p-6 max-w-2xl mx-auto text-center">
-        <h1 className="text-3xl font-bold mb-6">Are you ready?</h1>
-        <button
-          onClick={() => setQuizStarted(true)}
-          className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition"
-        >
-          Start Quiz
-        </button>
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-800">
+        <div className="p-6 max-w-2xl text-center">
+          <h1 className="text-3xl font-bold mb-6">Are you ready?</h1>
+          <button
+            onClick={() => setQuizStarted(true)}
+            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition"
+          >
+            Start Quiz
+          </button>
+        </div>
       </div>
     );
   }
 
   if (!currentQuestion) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-800">
+        <div>Loading...</div>
+      </div>
+    );
   }
 
   if (quizEnded) {
     return (
-      <div className="p-6 max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold mb-4">Quiz Ended</h1>
-        <p className="text-lg mb-6">Your final score: {score}</p>
-        <button
-          onClick={restartQuiz} // Call restartQuiz instead of reloading the page
-          className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition"
-        >
-          Restart Quiz
-        </button>
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-800">
+        <div className="p-6 max-w-2xl text-center">
+          <h1 className="text-3xl font-bold mb-4">Quiz Ended</h1>
+          <p className="text-lg mb-6">Your final score: {score}</p>
+          <button
+            onClick={restartQuiz}
+            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition"
+          >
+            Restart Quiz
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold mb-4">Quiz</h1>
-      <p className="text-lg mb-2">Score: {score}</p>
-      <p className="text-lg mb-2">Time Left: {timeLeft}s</p>
-      <p className="text-lg mb-6 text-green-600 dark:text-green-400">{feedback}</p>
-      <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold mb-4">
-          What is the French word for "{currentQuestion.english}"?
-        </h2>
-        <div className="grid grid-cols-2 gap-4">
-          {options.map((option, index) => (
-            <button
-              key={index}
-              onClick={() => handleAnswer(option)}
-              className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition"
-            >
-              {option.french}
-            </button>
-          ))}
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-800">
+      <div className="p-6 max-w-2xl">
+        <h1 className="text-3xl font-bold mb-4">Quiz</h1>
+        <p className="text-lg mb-2">Score: {score}</p>
+        <p className="text-lg mb-2">Time Left: {timeLeft}s</p>
+        <p className="text-lg mb-6 text-green-600 dark:text-green-400">{feedback}</p>
+        <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold mb-4">
+            What is the French word for "{currentQuestion.english}"?
+          </h2>
+          <div className="grid grid-cols-2 gap-4">
+            {options.map((option, index) => (
+              <button
+                key={index}
+                onClick={() => handleAnswer(option)}
+                className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition"
+              >
+                {option.french}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </div>

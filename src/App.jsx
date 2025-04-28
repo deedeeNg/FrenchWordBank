@@ -6,6 +6,7 @@ import Login from './Login';
 import Register from './Register';
 import ConfirmLogoutModal from './ConfirmLogoutModal';
 import Quiz from './Quiz';
+import Translate from './Translate';
 import { database, ref, set, get, child, update, onDisconnect } from './firebase';
 import { FiMenu, FiX } from 'react-icons/fi';
 
@@ -188,6 +189,12 @@ function App() {
                   >
                     🧩 Quiz
                   </Link>
+                  <Link
+                    to="/translate"
+                    className="text-left hover:text-gray-500 dark:hover:text-gray-400 text-lg transition-all duration-300"
+                  >
+                    🌐 Translate
+                  </Link>
                 </>
               )}
             </nav>
@@ -285,6 +292,12 @@ function App() {
               element={
                 loggedIn ? <Quiz words={words} /> : <Navigate to="/" />
               }
+            />
+
+             {/* Translate Page */}
+            <Route
+              path="/translate"
+              element={loggedIn ? <Translate /> : <Navigate to="/" />}
             />
           </Routes>
         </div>
