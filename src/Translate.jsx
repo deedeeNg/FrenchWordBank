@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const Translate = () => {
@@ -7,21 +7,19 @@ const Translate = () => {
   const [translatedText, setTranslatedText] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleTranslate = async () => {
-    if (!inputText.trim()) {
-      setTranslatedText('Please enter text to translate.');
+  const handleTranslate = async (text) => {
+    if (!text.trim()) {
+      setTranslatedText('');
       return;
     }
 
     setLoading(true);
 
     try {
-      // Define source and target languages based on translation direction
       const [sourceLang, targetLang] = translationDirection === 'fr-en' ? ['fr', 'en'] : ['en', 'fr'];
 
-      // Make API request to the Python backend
       const response = await axios.post('http://127.0.0.1:8080/translate', {
-        text: inputText,
+        text,
         source: sourceLang,
         target: targetLang,
       });
@@ -35,44 +33,84 @@ const Translate = () => {
     }
   };
 
+  // Automatically translate when inputText changes
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      handleTranslate(inputText);
+    }, 500); // Add a 500ms debounce to avoid excessive API calls
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [inputText, translationDirection]);
+
+  // Function to speak the input text
+  const handleSpeakInput = () => {
+    if (!inputText.trim()) return;
+
+    const utterance = new SpeechSynthesisUtterance(inputText);
+    utterance.lang = translationDirection === 'fr-en' ? 'fr-FR' : 'en-US'; // Set language based on direction
+    window.speechSynthesis.speak(utterance);
+  };
+
+  // Function to speak the translated text
+  const handleSpeakOutput = () => {
+    if (!translatedText.trim()) return;
+
+    const utterance = new SpeechSynthesisUtterance(translatedText);
+    utterance.lang = translationDirection === 'fr-en' ? 'en-US' : 'fr-FR'; // Set language based on direction
+    window.speechSynthesis.speak(utterance);
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-800">
-      <div className="p-6 max-w-2xl w-full bg-white dark:bg-gray-700 rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold mb-6 text-gray-800 dark:text-gray-100">🌐 Translate</h1>
-        <div className="mb-4">
-          <label className="block text-gray-700 dark:text-gray-300 mb-2">Enter text:</label>
-          <input
-            type="text"
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100"
-            placeholder="Type here..."
-          />
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800 p-4">
+      <h1 className="text-3xl font-bold mb-6 text-gray-800 dark:text-gray-100">🌐 Translate</h1>
+      <div className="w-full max-w-4xl bg-white dark:bg-gray-700 rounded-lg shadow-md p-6">
+        <div className="flex flex-col md:flex-row gap-4">
+          {/* Input Text Box */}
+          <div className="relative flex-1">
+            <textarea
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              className="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 resize-none h-40"
+              placeholder="Enter text here..."
+            ></textarea>
+            <button
+              onClick={handleSpeakInput}
+              className="absolute bottom-2 left-2 bg-transparent text-gray-800 dark:text-gray-100 p-2 rounded-full transition hover:bg-gray-200 dark:hover:bg-gray-600"
+              disabled={!inputText.trim()}
+            >
+              🔊
+            </button>
+          </div>
+
+          {/* Output Text Box */}
+          <div className="relative flex-1">
+            <textarea
+              value={translatedText}
+              readOnly
+              className="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 resize-none h-40"
+              placeholder="Translation will appear here..."
+            ></textarea>
+            <button
+              onClick={handleSpeakOutput}
+              className="absolute bottom-2 left-2 bg-transparent text-gray-800 dark:text-gray-100 p-2 rounded-full transition hover:bg-gray-200 dark:hover:bg-gray-600"
+              disabled={!translatedText.trim()}
+            >
+              🔊
+            </button>
+          </div>
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 dark:text-gray-300 mb-2">Translate direction:</label>
+
+        {/* Translation Direction Selector */}
+        <div className="flex items-center justify-between mt-4">
           <select
             value={translationDirection}
             onChange={(e) => setTranslationDirection(e.target.value)}
-            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100"
+            className="p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100"
           >
             <option value="fr-en">French to English</option>
             <option value="en-fr">English to French</option>
           </select>
         </div>
-        <button
-          onClick={handleTranslate}
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition"
-          disabled={loading}
-        >
-          {loading ? 'Translating...' : 'Translate'}
-        </button>
-        {translatedText && (
-          <div className="mt-6">
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">Translation:</h2>
-            <p className="text-lg text-gray-700 dark:text-gray-300 mt-2">{translatedText}</p>
-          </div>
-        )}
       </div>
     </div>
   );
