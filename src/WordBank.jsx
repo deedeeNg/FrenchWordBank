@@ -33,14 +33,14 @@ function WordBank({ words, onEdit, onDelete, darkMode }) {
           return (
             <div
               key={realIndex}
-              className={`border rounded p-4 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center transition-all transform hover:scale-105 ${
+              className={`border rounded p-4 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center transition-all ${
                 darkMode
-                  ? 'bg-gray-800 border-gray-700 text-white'
-                  : 'bg-white border-gray-200'
-              } mb-4`} // Added margin-bottom to create space between the cards
+                  ? 'bg-gray-800 border-gray-700 text-white hover:bg-gray-700 hover:shadow-lg'
+                  : 'bg-white border-gray-200 hover:bg-gray-100 hover:shadow-md'
+              } mb-4`} // Added hover effects for brightness
               style={{
-                transition: 'background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease',
-                willChange: 'box-shadow, background-color, transform',
+                transition: 'background-color 0.3s ease, box-shadow 0.3s ease',
+                willChange: 'box-shadow, background-color',
                 backfaceVisibility: 'hidden',
               }}
             >
