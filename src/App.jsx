@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import AddWordForm from './AddWordForm';
 import WordBank from './WordBank';
 import Login from './Login';
 import Register from './Register';
 import ConfirmLogoutModal from './ConfirmLogoutModal';
 import { database, ref, set, get, child, update, onDisconnect } from './firebase';
-import { FiMenu, FiX } from 'react-icons/fi'; // You can install react-icons for the hamburger menu
+import { FiMenu, FiX } from 'react-icons/fi';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -17,7 +18,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 
   useEffect(() => {
     if (username) {
@@ -45,6 +46,17 @@ function App() {
       document.documentElement.classList.remove('dark');
     }
   }, [darkMode]);
+
+  const normalize = (str) =>
+    str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+  const filteredWords = words.filter((word) => {
+    const term = normalize(searchTerm);
+    return (
+      normalize(word.french).startsWith(term) ||
+      normalize(word.english).startsWith(term)
+    );
+  });
 
   const addWord = (newWord) => {
     const isDuplicate = words.some(
@@ -81,18 +93,6 @@ function App() {
       });
   };
 
-  // Searching words
-  const normalize = (str) => 
-    str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-  
-  const filteredWords = words.filter((word) => {
-    const term = normalize(searchTerm);
-    return (
-      normalize(word.french).startsWith(term) ||
-      normalize(word.english).startsWith(term)
-    );
-  });
-
   const handleLogin = async (enteredUsername, enteredPassword) => {
     if (!enteredUsername || !enteredPassword) {
       alert('Please enter valid username and password');
@@ -111,7 +111,7 @@ function App() {
 
       await update(userRef, {
         loggedIn: true,
-        lastActive: Date.now()
+        lastActive: Date.now(),
       });
 
       onDisconnect(ref(database, `users/${enteredUsername}/loggedIn`)).set(false);
@@ -120,6 +120,7 @@ function App() {
       setPassword(enteredPassword);
       setLoggedIn(true);
       setIsRegistering(false);
+      setSidebarCollapsed(true); // Collapse sidebar after login
     } else {
       alert('Account does not exist. Please register.');
     }
@@ -141,7 +142,7 @@ function App() {
     setIsRegistering(false);
     setIsModalOpen(false);
     setDarkMode(false);
-    setSidebarCollapsed(false);
+    setSidebarCollapsed(true);
   };
 
   const handleCancelLogout = () => {
@@ -163,42 +164,48 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen flex bg-gray-100 dark:bg-gray-800 transition-all">
-      
-      {/* Sidebar */}
-      <div
-        className={`bg-gray-200 dark:bg-gray-700 text-black dark:text-white p-6 flex flex-col transition-all duration-300 ease-in-out ${
-          sidebarCollapsed ? 'w-20' : 'w-64'
-        } shadow-lg fixed top-0 left-0 h-full`}
-      >
-        {/* Collapse/Expand Button */}
-        <button
-          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          className="mb-6 text-gray-800 dark:text-gray-300 focus:outline-none hover:text-gray-500 dark:hover:text-gray-400 transition-colors duration-300"
+    <Router>
+      <div className="min-h-screen flex bg-gray-100 dark:bg-gray-800 transition-all">
+        {/* Sidebar */}
+        <div
+          className={`bg-gray-200 dark:bg-gray-700 text-black dark:text-white p-6 flex flex-col transition-all duration-300 ease-in-out ${
+            sidebarCollapsed ? 'w-20' : 'w-64'
+          } shadow-lg fixed top-0 left-0 h-full`}
         >
-          {sidebarCollapsed ? (
-            <FiMenu className="text-2xl" />
-          ) : (
-            <FiX className="text-2xl" />
-          )}
-        </button>
+          {/* Collapse/Expand Button */}
+          <button
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            className="mb-6 text-gray-800 dark:text-gray-300 focus:outline-none hover:text-gray-500 dark:hover:text-gray-400 transition-colors duration-300"
+          >
+            {sidebarCollapsed ? (
+              <FiMenu className="text-2xl" />
+            ) : (
+              <FiX className="text-2xl" />
+            )}
+          </button>
 
-        {/* Only show content if not collapsed */}
-        {!sidebarCollapsed && (
-          <>
-            <nav className="flex flex-col space-y-6">
-              <button className="text-left hover:text-gray-500 dark:hover:text-gray-400 text-lg transition-all duration-300">
-                🏠 Home
-              </button>
-              <button className="text-left hover:text-gray-500 dark:hover:text-gray-400 text-lg transition-all duration-300">
-                ➕ Add Word
-              </button>
-              <button className="text-left hover:text-gray-500 dark:hover:text-gray-400 text-lg transition-all duration-300">
-                📚 Word Bank
-              </button>
-            </nav>
+          {/* Navigation Bar */}
+          <nav className="flex flex-col space-y-6">
+            {!sidebarCollapsed && (
+              <>
+                <Link
+                  to="/"
+                  className="text-left hover:text-gray-500 dark:hover:text-gray-400 text-lg transition-all duration-300"
+                >
+                  🏠 Home
+                </Link>
+                <Link
+                  to="/quiz"
+                  className="text-left hover:text-gray-500 dark:hover:text-gray-400 text-lg transition-all duration-300"
+                >
+                  🧩 Quiz
+                </Link>
+              </>
+            )}
+          </nav>
 
-            {/* Show Log out button only when sidebar is expanded */}
+          {/* Show Log out button only when sidebar is expanded */}
+          {!sidebarCollapsed && (
             <div className="mt-auto">
               <button
                 onClick={handleLogoutClick}
@@ -207,58 +214,62 @@ function App() {
                 🚪 Log out
               </button>
             </div>
-          </>
-        )}
+          )}
+        </div>
+
+        {/* Main Content */}
+        <div
+          className={`flex-1 p-10 transition-all ${
+            sidebarCollapsed ? 'ml-20' : 'ml-64'
+          }`}
+        >
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <>
+                  <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100">
+                      📖 French Vocab Word Bank
+                    </h1>
+                    <button
+                      onClick={() => setDarkMode(!darkMode)}
+                      className="ml-4 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-100 px-3 py-1 rounded"
+                    >
+                      {darkMode ? '🌞' : '🌙'}
+                    </button>
+                  </div>
+                  <AddWordForm addWord={addWord} editingWord={editingWord} darkMode={darkMode} />
+                  <div className="mt-6">
+                    <input
+                      type="text"
+                      placeholder="🔍 Search words..."
+                      className="border border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded p-2 w-full mb-4"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <WordBank
+                      words={filteredWords}
+                      onEdit={startEditing}
+                      onDelete={deleteWord}
+                      darkMode={darkMode}
+                    />
+                  </div>
+                </>
+              }
+            />
+            <Route path="/quiz" element={<div>Quiz Page (Coming Soon)</div>} />
+          </Routes>
+        </div>
+
+        {/* Confirm Logout Modal */}
+        <ConfirmLogoutModal
+          isOpen={isModalOpen}
+          onConfirm={handleConfirmLogout}
+          onCancel={handleCancelLogout}
+        />
       </div>
-
-      {/* Main Content */}
-      <div
-        className={`flex-1 p-10 transition-all ${
-          sidebarCollapsed ? 'ml-20' : 'ml-64'
-        }`}
-      >
-        {/* Dark mode toggle and greeting */}
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100">
-            📖 French Vocab Word Bank
-          </h1>
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            className="ml-4 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-100 px-3 py-1 rounded"
-          >
-            {darkMode ? '🌞' : '🌙'}
-          </button>
-        </div>
-
-        <div className="text-lg text-gray-700 dark:text-gray-300 mb-6">
-          👋 Hello, <strong>{username}</strong>
-        </div>
-
-        {/* Add word form */}
-        <AddWordForm addWord={addWord} editingWord={editingWord} darkMode={darkMode} />
-
-        {/* Search input */}
-        <div className="mt-6">
-          <input
-            type="text"
-            placeholder="🔍 Search words..."
-            className="border border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded p-2 w-full mb-4"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-
-          {/* Word bank */}
-          <WordBank words={filteredWords} onEdit={startEditing} onDelete={deleteWord} darkMode={darkMode} />
-        </div>
-      </div>
-
-      {/* Confirm Logout Modal */}
-      <ConfirmLogoutModal
-        isOpen={isModalOpen}
-        onConfirm={handleConfirmLogout}
-        onCancel={handleCancelLogout}
-      />
-    </div>
+    </Router>
   );
 }
 
