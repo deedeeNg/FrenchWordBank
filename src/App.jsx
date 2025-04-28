@@ -5,6 +5,7 @@ import WordBank from './WordBank';
 import Login from './Login';
 import Register from './Register';
 import ConfirmLogoutModal from './ConfirmLogoutModal';
+import Quiz from './Quiz';
 import { database, ref, set, get, child, update, onDisconnect } from './firebase';
 import { FiMenu, FiX } from 'react-icons/fi';
 
@@ -258,7 +259,7 @@ function App() {
                 </>
               }
             />
-            <Route path="/quiz" element={<div>Quiz Page (Coming Soon)</div>} />
+            <Route path="/quiz" element={<Quiz words={words} />} />
           </Routes>
         </div>
 
