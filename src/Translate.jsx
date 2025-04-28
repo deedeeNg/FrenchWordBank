@@ -20,7 +20,7 @@ const Translate = () => {
       const [sourceLang, targetLang] = translationDirection === 'fr-en' ? ['fr', 'en'] : ['en', 'fr'];
 
       // Make API request to the Python backend
-      const response = await axios.post('http://127.0.0.1:5000/translate', {
+      const response = await axios.post('http://127.0.0.1:8080/translate', {
         text: inputText,
         source: sourceLang,
         target: targetLang,
