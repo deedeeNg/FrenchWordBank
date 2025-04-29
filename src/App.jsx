@@ -7,6 +7,7 @@ import Register from './Register';
 import ConfirmLogoutModal from './ConfirmLogoutModal';
 import Quiz from './Quiz';
 import Translate from './Translate';
+import AI from './AI';
 import { database, ref, set, get, child, update, onDisconnect } from './firebase';
 import { FiMenu, FiX } from 'react-icons/fi';
 
@@ -195,6 +196,12 @@ function App() {
                   >
                     🌐 Translate
                   </Link>
+                  <Link
+                    to="/ai"
+                    className="text-left hover:text-gray-500 dark:hover:text-gray-400 text-lg transition-all duration-300"
+                  >
+                    🤖 AI
+                  </Link>
                 </>
               )}
             </nav>
@@ -299,7 +306,12 @@ function App() {
               path="/translate"
               element={loggedIn ? <Translate /> : <Navigate to="/" />}
             />
-          </Routes>
+
+            {/* AI Page */}
+            <Route 
+              path="/ai" 
+              element={loggedIn ? <AI /> : <Navigate to="/" />} />  
+            </Routes>
         </div>
 
         {/* Confirm Logout Modal */}
