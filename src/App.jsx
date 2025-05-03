@@ -8,9 +8,11 @@ import ConfirmLogoutModal from './ConfirmLogoutModal';
 import Quiz from './Quiz';
 import Translate from './Translate';
 import AI from './AI';
+import Conjugaison from './Conjugaison';
 import { database, ref, set, get, child, update, onDisconnect } from './firebase';
 import { FiMenu, FiX } from 'react-icons/fi';
 
+console.log(Conjugaison);
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
@@ -202,6 +204,9 @@ function App() {
                   >
                     🤖 AI
                   </Link>
+                  <Link to="/conjugaison" className="nav-link">
+                    Conjugaison
+                  </Link>
                 </>
               )}
             </nav>
@@ -311,6 +316,11 @@ function App() {
             <Route 
               path="/ai" 
               element={loggedIn ? <AI /> : <Navigate to="/" />} />  
+            
+            {/* Conjugaison Page */} 
+            <Route
+              path="/conjugaison"
+              element={loggedIn ? <Conjugaison /> : <Navigate to="/" />} />
             </Routes>
         </div>
 
