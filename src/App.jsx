@@ -205,7 +205,7 @@ function App() {
                     🤖 AI
                   </Link>
                   <Link to="/conjugaison" className="nav-link">
-                    Conjugaison
+                    📖 Conjugaison
                   </Link>
                 </>
               )}
